@@ -1,8 +1,8 @@
 /**
- * BFH-TI, SWS CAS DS05, ParSynch (Frühling 2012)<br>
- * Java Concurrency Übung <i>ProductionConsumption</i>
+ * BFH-TI, SWS CAS DS05, ParSynch (FrÃ¼hling 2012)<br>
+ * Java Concurrency Ãœbung <i>ProductionConsumption</i>
  * <p>
- * Die Klasse <i>Data</i> ermöglicht funktionale Erweiterungen der Klasse
+ * Die Klasse <i>Data</i> ermÃ¶glicht funktionale Erweiterungen der Klasse
  * <i>DataFundamentals</i> durch die Studierenden.
  * 
  * @author hans.roethlisberger@bfh.ch
@@ -10,19 +10,19 @@
  * 
  */
 public class Data extends DataFundamentals {
-	/**
-	 * Konstruiert ein <i>Data<i> Objekt.
-	 * 
-	 * @param nameOfPropertiesFile
-	 *           Filename zum Lesen der Properties-Daten.
-	 * @param args
-	 *           Argumente die beim Starten der Applikation
-	 *           <i>ProductionConsumption</i> definiert wurden.
-	 */
-	Data(String nameOfPropertiesFile, String[] args) {
-		super(nameOfPropertiesFile, args);
-	}
+    /**
+     * Konstruiert ein <i>Data</i> Objekt.
+     * 
+     * @param nameOfPropertiesFile
+     *            Filename zum Lesen der Properties-Daten.
+     * @param args
+     *            Argumente die beim Starten der Applikation
+     *            <i>ProductionConsumption</i> definiert wurden.
+     */
+    Data(final String nameOfPropertiesFile, final String[] args) {
+        super(nameOfPropertiesFile, args);
+    }
 
-	// Erweiterungen von Studierenden
+    // Erweiterungen von Studierenden
 
 }
