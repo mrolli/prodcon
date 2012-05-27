@@ -2,13 +2,13 @@ import java.io.*;
 import java.util.*;
 
 /**
- * BFH-TI, SWS CAS DS05, ParSynch (Frühling 2012)<br>
- * Java Concurrency Übung <i>ProductionConsumption</i>
+ * BFH-TI, SWS CAS DS05, ParSynch (FrÃ¼hling 2012)<br>
+ * Java Concurrency Ãœbung <i>ProductionConsumption</i>
  * <p>
  * Die Klasse <i>DataFundamentals</i> liest und validiert die Argumente sowie
  * die Properties-Definitionen.
  * <p>
- * Die Klasse sollte nicht verändert werden. Anpassungen/Erweiterungen können in
+ * Die Klasse sollte nicht verÃ¤ndert werden. Anpassungen/Erweiterungen kÃ¶nnen in
  * der Klasse <i>Data</i> vorgenommen werden.
  * 
  * @author hans.roethlisberger@bfh.ch
@@ -17,42 +17,42 @@ import java.util.*;
  */
 public class DataFundamentals {
 	// Default-Properties-File mit den Initialisierungsparametern, kann mit
-	// Argument beim Start überschrieben werden
+	// Argument beim Start Ã¼berschrieben werden
 	private String nameOfPropFile = "Data.properties";
-	// Für Definition der Keys für Properties-File
+	// FÃ¼r Definition der Keys fÃ¼r Properties-File
 	private String[] propertiesKeys = new String[16];
 	// Start der Verarbeitung der Argumente
 	private int startOfArgs = 0;
-	// Default-Anz. mögl. Eingabe-Arg. beim Start der Applikation (Kommandozeile)
+	// Default-Anz. mÃ¶gl. Eingabe-Arg. beim Start der Applikation (Kommandozeile)
 	private int acceptedArgs = 3;
 	// Max. Anz. von Prod.-Konsum.-Threads (additiv main- und Inspektor-Thread)
 	private final int numberOfMaxProdCons = 2000;
-	// Variablen die über Properties-Definitionen initialisiert werden
-	// Gesamtproduktionszeit, kann mit Argument beim Start überschrieben werden
+	// Variablen die Ã¼ber Properties-Definitionen initialisiert werden
+	// Gesamtproduktionszeit, kann mit Argument beim Start Ã¼berschrieben werden
 	private int timeToRun;
-	// Anz. Produzenten-Threads, kann mit Arg. beim Start überschrieben werden
+	// Anz. Produzenten-Threads, kann mit Arg. beim Start Ã¼berschrieben werden
 	private int numberOfProducers;
-	// Anzahl Konsumenten-Threads, kann mit Arg. beim Start überschrieben werden
+	// Anzahl Konsumenten-Threads, kann mit Arg. beim Start Ã¼berschrieben werden
 	private int numberOfConsumers;
-	// Priorität für main-Thread, Default-Priorität: 5
+	// PrioritÃ¤t fÃ¼r main-Thread, Default-PrioritÃ¤t: 5
 	private int mainPriority;
-	// Priorität für Inspektor-Thread
+	// PrioritÃ¤t fÃ¼r Inspektor-Thread
 	private int inspectorPriority;
-	// Intervall Inspektor, Wartezeit bis nächste Inspektion stattfindet
+	// Intervall Inspektor, Wartezeit bis nÃ¤chste Inspektion stattfindet
 	private int cycleTimeInspector;
-	// Minimale Grösse des Lagers
+	// Minimale GrÃ¶sse des Lagers
 	private int minimalStoreSize;
-	// Maximale Grösse des Lagers
+	// Maximale GrÃ¶sse des Lagers
 	private int maximalStoreSize;
-	// Basislosgrösse für Produzenten
+	// BasislosgrÃ¶sse fÃ¼r Produzenten
 	private int lotDefaultProduction;
-	// Max. Multiplikator für Losgrösse Prod. (Parameter für random.nextInt()),
-	// 1 ergibt fixe Losgrösse mit lotDefaultProduction
+	// Max. Multiplikator fÃ¼r LosgrÃ¶sse Prod. (Parameter fÃ¼r random.nextInt()),
+	// 1 ergibt fixe LosgrÃ¶sse mit lotDefaultProduction
 	private int lotFactorProduction;
-	// Basislosgrösse für Konsumenten
+	// BasislosgrÃ¶sse fÃ¼r Konsumenten
 	private int lotDefaultConsumption;
-	// Max. Multiplikator für Losgrösse Kons. (Parameter für random.nextInt()),
-	// 1 ergibt fixe Losgrösse mit lotDefaultConsumption
+	// Max. Multiplikator fÃ¼r LosgrÃ¶sse Kons. (Parameter fÃ¼r random.nextInt()),
+	// 1 ergibt fixe LosgrÃ¶sse mit lotDefaultConsumption
 	private int lotFactorConsumption;
 	// Name des Inspektors
 	private String nameOfInspector;
@@ -60,7 +60,7 @@ public class DataFundamentals {
 	private String baseNameOfProducers;
 	// Basisname der Konsumenten, additiv: Laufnummer
 	private String baseNameOfConsumers;
-	// Monitor für den Schutz des Lagers fair (true), resp. nicht fair (false)
+	// Monitor fÃ¼r den Schutz des Lagers fair (true), resp. nicht fair (false)
 	private boolean monitorStoreIsFair;
 
 	/**
@@ -73,7 +73,7 @@ public class DataFundamentals {
 	 *           <i>ProductionConsumption</i> definiert wurden.
 	 */
 	DataFundamentals(String nameOfPropertiesFile, String[] args) {
-		// Def. der Keys für Prop.-File, Namen der Keys entspr. den Variablennamen
+		// Def. der Keys fÃ¼r Prop.-File, Namen der Keys entspr. den Variablennamen
 		propertiesKeys[0] = "timeToRun";
 		propertiesKeys[1] = "numberOfProducers";
 		propertiesKeys[2] = "numberOfConsumers";
@@ -97,7 +97,7 @@ public class DataFundamentals {
 			this.nameOfPropFile = nameOfPropertiesFile;
 			// Korrektur Index der Argumente (Prop.-File als Argument definiert)
 			startOfArgs = 1;
-			acceptedArgs++; // Korrektur Anzahl zulässiger Argumente
+			acceptedArgs++; // Korrektur Anzahl zulÃ¤ssiger Argumente
 		}
 
 		Properties properties = new Properties();
@@ -107,27 +107,27 @@ public class DataFundamentals {
 			if (startOfArgs == 0) {
 				printErrorMessages(1, 2); // Default Properties-File nicht gefunden
 				System.exit(1);
-			} else { // Properties File gemäss args[0] nicht gefunden
+			} else { // Properties File gemÃ¤ss args[0] nicht gefunden
 				printErrorMessages(1, 3);
 				System.exit(1);
 			}
 		}
 		// Einlesen und validieren der Properties-Definitionen
 		getAndCheckProperties(properties);
-		// Logische Prüfung der Definitionen und Konsolenargumente
+		// Logische PrÃ¼fung der Definitionen und Konsolenargumente
 		verifyingParameters(args);
 	}
 
 	/**
-	 * Einlesen und validieren der Properties-Definitionen. Prüfen, ob alle Keys
-	 * und die dazugehörigen Argumente definiert sind.
+	 * Einlesen und validieren der Properties-Definitionen. PrÃ¼fen, ob alle Keys
+	 * und die dazugehÃ¶rigen Argumente definiert sind.
 	 * 
 	 * @param properties
 	 *           Definierte Properties.
 	 */
 	private void getAndCheckProperties(Properties properties) {
-		String key = null; // Für Abarb. Properties-Keys, zu bearbeitender Key
-		// Einl. und prüfen der Prop. int-Definitionen (Datentyp, Properties-Keys)
+		String key = null; // FÃ¼r Abarb. Properties-Keys, zu bearbeitender Key
+		// Einl. und prÃ¼fen der Prop. int-Definitionen (Datentyp, Properties-Keys)
 		try {
 			timeToRun = Integer.parseInt(properties
 					.getProperty(key = propertiesKeys[0]));
@@ -154,17 +154,17 @@ public class DataFundamentals {
 			lotFactorConsumption = Integer.parseInt(properties
 					.getProperty(key = propertiesKeys[11]));
 		} catch (NumberFormatException ex) {
-			printErrorMessages(1, 4); // Unzulässige Definition in Properties-File
+			printErrorMessages(1, 4); // UnzulÃ¤ssige Definition in Properties-File
 			printErrorMessages(key, 5); // Key kann nicht definiert werden
 			printErrorMessages(6);
 			System.exit(1);
 		}
 
-		// Einlesen und prüfen der Prop. String-Definitionen (Properties-Keys)
+		// Einlesen und prÃ¼fen der Prop. String-Definitionen (Properties-Keys)
 		nameOfInspector = properties.getProperty(propertiesKeys[12]);
 		baseNameOfProducers = properties.getProperty(propertiesKeys[13]);
 		baseNameOfConsumers = properties.getProperty(propertiesKeys[14]);
-		key = null; // Default für Prüfung der String-Definitionen zurücksetzen
+		key = null; // Default fÃ¼r PrÃ¼fung der String-Definitionen zurÃ¼cksetzen
 
 		if (nameOfInspector == null || nameOfInspector.equals(""))
 			key = propertiesKeys[12];
@@ -174,13 +174,13 @@ public class DataFundamentals {
 			key = propertiesKeys[14];
 
 		if (key != null) {
-			printErrorMessages(1, 4); // Unzulässige Definition in Properties-File
+			printErrorMessages(1, 4); // UnzulÃ¤ssige Definition in Properties-File
 			printErrorMessages(key, 5); // Key kann nicht definiert werden
 			printErrorMessages(7);
 			System.exit(1);
 		}
 
-		// Einlesen und prüfen der Properties Boolean-Definition (Properties-Key,
+		// Einlesen und prÃ¼fen der Properties Boolean-Definition (Properties-Key,
 		// Argumente false/true) als Lower-Case String
 		String queueOrderMonitorStore = properties
 				.getProperty(propertiesKeys[15]).toLowerCase();
@@ -188,7 +188,7 @@ public class DataFundamentals {
 		if (queueOrderMonitorStore == null
 				|| (!queueOrderMonitorStore.equals("false") && !queueOrderMonitorStore
 						.equals("true"))) {
-			printErrorMessages(1, 4); // Unzulässige Definition in Properties-File
+			printErrorMessages(1, 4); // UnzulÃ¤ssige Definition in Properties-File
 			// Key kann nicht definiert werden
 			printErrorMessages(propertiesKeys[15], 5);
 			printErrorMessages(8);
@@ -198,7 +198,7 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Minimale logische Prüfung der Definitionen (Properties-File und Argumente
+	 * Minimale logische PrÃ¼fung der Definitionen (Properties-File und Argumente
 	 * der Kommandozeile).
 	 * 
 	 * @param args
@@ -237,7 +237,7 @@ public class DataFundamentals {
 			}
 		}
 
-		// Minimale Prüfung der Parameter
+		// Minimale PrÃ¼fung der Parameter
 		if (timeToRun <= 0) {
 			printErrorMessages(1, 11); // Arbeitszeit muss > 0 sein
 			System.exit(1);
@@ -264,30 +264,30 @@ public class DataFundamentals {
 			System.exit(1);
 		}
 		if (minimalStoreSize < 0) {
-			printErrorMessages(1, 17); // Minimale Lagergrösse muss >= 0 sein
+			printErrorMessages(1, 17); // Minimale LagergrÃ¶sse muss >= 0 sein
 			System.exit(1);
 		}
 		if (maximalStoreSize < 1) {
-			printErrorMessages(1, 18); // Maximale Lagergrösse muss > 0 sein
+			printErrorMessages(1, 18); // Maximale LagergrÃ¶sse muss > 0 sein
 			System.exit(1);
 		}
 		if (lotDefaultProduction < 1 || lotDefaultConsumption < 1) {
-			// Losgroessen fuer Produzenten und Konsumenten müssen > 0 sein
+			// Losgroessen fuer Produzenten und Konsumenten mÃ¼ssen > 0 sein
 			printErrorMessages(1, 19);
 			System.exit(1);
 		}
 		if (lotFactorProduction < 1 || lotFactorConsumption < 1) {
-			// Faktoren fuer Produzenten und Konsumenten müssen > 0 sein
+			// Faktoren fuer Produzenten und Konsumenten mÃ¼ssen > 0 sein
 			printErrorMessages(1, 20);
 			System.exit(1);
 		}
 
-		// Bestimmung der minimal notwendigen Lagergrösse (maximalStoreSize) in
-		// Abhängigkeit der übrigen Lagerparameter
+		// Bestimmung der minimal notwendigen LagergrÃ¶sse (maximalStoreSize) in
+		// AbhÃ¤ngigkeit der Ã¼brigen Lagerparameter
 
 		// GGT der beiden Lose
 		int gcdLotSizes = gcdEuklid(lotDefaultProduction, lotDefaultConsumption);
-		// Notwendige Lagergrösse wenn minimalStoreSize = 0
+		// Notwendige LagergrÃ¶sse wenn minimalStoreSize = 0
 		int requiredStoreSize = (lotDefaultProduction * lotFactorProduction + lotDefaultConsumption
 				* lotFactorConsumption)
 				- gcdLotSizes;
@@ -297,7 +297,7 @@ public class DataFundamentals {
 					+ (((minimalStoreSize - 1) / gcdLotSizes) + 1) * gcdLotSizes;
 		}
 		if (maximalStoreSize < requiredStoreSize) { // Lager zu klein?
-			printErrorMessages(1); // Lagerparameter ungünstig definiert
+			printErrorMessages(1); // Lagerparameter ungÃ¼nstig definiert
 			printErrorMessages(Integer.toString(requiredStoreSize), 21);
 			// Wenn keine Tastatur-Eingabe: Programm weiter abarbeiten
 			if (scanner.nextLine().length() != 0) {
@@ -308,13 +308,13 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Berechnet das GGT für die Bestimmung der minimal notwendigen Lagergrösse
+	 * Berechnet das GGT fÃ¼r die Bestimmung der minimal notwendigen LagergrÃ¶sse
 	 * (Euklidscher Algorithmus).
 	 * 
 	 * @param figure1
-	 *           Erster Parameter für die Bestimmung des GGTs.
+	 *           Erster Parameter fÃ¼r die Bestimmung des GGTs.
 	 * @param figure2
-	 *           Zweiter Parameter für die Bestimmung des GGTs.
+	 *           Zweiter Parameter fÃ¼r die Bestimmung des GGTs.
 	 * @return
 	 */
 	private int gcdEuklid(int figure1, int figure2) {
@@ -432,7 +432,7 @@ public class DataFundamentals {
 	 * (Fehlermeldungen mit explizit definiertem Fehlermeldungs-Parameter).
 	 * 
 	 * @param arg
-	 *           Argument, Paramter für die Fehlermeldung.
+	 *           Argument, Paramter fÃ¼r die Fehlermeldung.
 	 * @param errorMessageNr
 	 *           Nummer der Fehlermeldung.
 	 */
@@ -469,7 +469,7 @@ public class DataFundamentals {
 
 	/**
 	 * 
-	 * Ausgabe der definierten Paramter. (Aktivität #1, Aufruf durch
+	 * Ausgabe der definierten Paramter. (AktivitÃ¤t #1, Aufruf durch
 	 * <i>main()</i> beim Programmstart).
 	 */
 	public void printData() {
@@ -538,10 +538,10 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die Inaktivitätszeit des Inspektors zwischen zwei
+	 * Returniert die InaktivitÃ¤tszeit des Inspektors zwischen zwei
 	 * Inspektions-Intervallen.
 	 * 
-	 * @return Inaktivitätszeit des Inspektors (Properties-Key:
+	 * @return InaktivitÃ¤tszeit des Inspektors (Properties-Key:
 	 *         <i>cycleTimeInspector</i>).
 	 */
 	public int getCycleTimeInspector() {
@@ -549,18 +549,18 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die Priorität des main-Threads.
+	 * Returniert die PrioritÃ¤t des main-Threads.
 	 * 
-	 * @return Priorität des main-Threads (Properties-Key: <i>mainPriority</i>).
+	 * @return PrioritÃ¤t des main-Threads (Properties-Key: <i>mainPriority</i>).
 	 */
 	public int getMainPriority() {
 		return mainPriority;
 	}
 
 	/**
-	 * Returniert die Priorität des Inspektor-Threads.
+	 * Returniert die PrioritÃ¤t des Inspektor-Threads.
 	 * 
-	 * @return Priorität des Inspektor-Threads (Properties-Key:
+	 * @return PrioritÃ¤t des Inspektor-Threads (Properties-Key:
 	 *         <i>inspectorPriority</i>).
 	 */
 	public int getInspectorPriority() {
@@ -568,9 +568,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die minimale Grösse des Lagers.
+	 * Returniert die minimale GrÃ¶sse des Lagers.
 	 * 
-	 * @return Minimale Grösse des Lagers (Properties-Key:
+	 * @return Minimale GrÃ¶sse des Lagers (Properties-Key:
 	 *         <i>minimalStoreSize</i>).
 	 */
 	public int getMinimalStoreSize() {
@@ -578,9 +578,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die maximale Grösse des Lagers.
+	 * Returniert die maximale GrÃ¶sse des Lagers.
 	 * 
-	 * @return Maximale Grösse des Lagers (Properties-Key:
+	 * @return Maximale GrÃ¶sse des Lagers (Properties-Key:
 	 *         <i>maximalStoreSize</i>).
 	 */
 	public int getMaximalStoreSize() {
@@ -588,9 +588,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die Basislosgrösse der Produzenten.
+	 * Returniert die BasislosgrÃ¶sse der Produzenten.
 	 * 
-	 * @return Basislosgrösse der Produzenten (Properties-Key:
+	 * @return BasislosgrÃ¶sse der Produzenten (Properties-Key:
 	 *         <i>lotDefaultProduction</i>).
 	 */
 	public int getLotDefaultProduction() {
@@ -598,9 +598,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert den maximalen Multiplikator für die Losgrösse der Produzenten.
+	 * Returniert den maximalen Multiplikator fÃ¼r die LosgrÃ¶sse der Produzenten.
 	 * 
-	 * @return Maximaler Multiplikator für die Losgrösse der Produzenten
+	 * @return Maximaler Multiplikator fÃ¼r die LosgrÃ¶sse der Produzenten
 	 *         (Properties-Key: <i>lotFactorProduction</i>).
 	 */
 	public int getLotFactorProduction() {
@@ -608,9 +608,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die Basislosgrösse der Konsumenten.
+	 * Returniert die BasislosgrÃ¶sse der Konsumenten.
 	 * 
-	 * @return Basislosgrösse der Produzenten (Properties-Key:
+	 * @return BasislosgrÃ¶sse der Produzenten (Properties-Key:
 	 *         <i>lotDefaultConsumption</i>).
 	 */
 	public int getLotDefaultConsumption() {
@@ -618,9 +618,9 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert den maximalen Multiplikator für die Losgrösse der Konsumenten.
+	 * Returniert den maximalen Multiplikator fÃ¼r die LosgrÃ¶sse der Konsumenten.
 	 * 
-	 * @return Maximaler Multiplikator für die Losgrösse der Konsumenten
+	 * @return Maximaler Multiplikator fÃ¼r die LosgrÃ¶sse der Konsumenten
 	 *         (Properties-Key: <i>lotFactorConsumption</i>).
 	 */
 	public int getLotFactorConsumption() {
@@ -658,7 +658,7 @@ public class DataFundamentals {
 	}
 
 	/**
-	 * Returniert die Definition des Monitors zum Schützen des Lagers (fair
+	 * Returniert die Definition des Monitors zum SchÃ¼tzen des Lagers (fair
 	 * (true), nicht fair (false)).
 	 * 
 	 * @return Monitor (Lager) ist fair (true), oder nicht fair (false)

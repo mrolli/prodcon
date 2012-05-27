@@ -1,5 +1,5 @@
 /*
- * Selbstdeklaration Lösungsanteile
+ * Selbstdeklaration LÃ¶sungsanteile
  * --------------------------------
  * Pflichtanteil 50%: ja/nein
  * 
@@ -8,7 +8,7 @@
  * 
  * Erweiterungen:
  * 
- * Prioritäten 5%: ja/nein
+ * PrioritÃ¤ten 5%: ja/nein
  * Synchr. Ausgabe Thread-Daten #2, 11 20%: ja/nein
  * Threads Start/Ende synchr. #3, 9 20%: ja/nein
  * 
@@ -16,18 +16,18 @@
  * 
  * 
  * Inspektor-Thread: ja/nein
- * Aktivität #2,6,11 10%: ja/nein
+ * AktivitÃ¤t #2,6,11 10%: ja/nein
  * Aktiv wenn Lose abgeschlossen #6 10%: ja/nein
  * 
  * Fehler:
  * 
  * 
- * Erwarteter Lösungsanteil: xx%
+ * Erwarteter LÃ¶sungsanteil: xx%
  */
 
 /**
- * BFH-TI, SWS CAS DS05, ParSynch (Frühling 2012)<br>
- * Java Concurrency Übung <i>ProductionConsumption</i>
+ * BFH-TI, SWS CAS DS05, ParSynch (FrÃ¼hling 2012)<br>
+ * Java Concurrency Ãœbung <i>ProductionConsumption</i>
  * <p>
  * Die Klasse <i>ProductionConsumption</i> startet mit der <i>main()</i>-Methode
  * die Applikation <i>ProductionConsumption</i>.
@@ -43,7 +43,7 @@ public class ProductionConsumption {
 	 * Aktiviert die Applikation <i>ProductionConsumption</i>. Als Ausgangsbasis
 	 * werden die definierten Parameter ausgegeben.
 	 * <p>
-	 * Normalerweise wird die Methode erweitert, indem die weitere Funktionalität
+	 * Normalerweise wird die Methode erweitert, indem die weitere FunktionalitÃ¤t
 	 * (z.B. aktivieren von Threads) implementiert wird.
 	 * 
 	 * @param args
@@ -57,7 +57,7 @@ public class ProductionConsumption {
 		// Name von Properties-File als Argument
 		String nameOfPropertiesFile = "";
 
-		// Argument könnte Name für Properties-File sein
+		// Argument kÃ¶nnte Name fÃ¼r Properties-File sein
 		if (args.length > 0) {
 			try {
 				Integer.parseInt(args[0]);
@@ -67,7 +67,7 @@ public class ProductionConsumption {
 			}
 		}
 
-		// Objekt erzeugen, Properties-Definitionen sowie Argumente prüfen
+		// Objekt erzeugen, Properties-Definitionen sowie Argumente prÃ¼fen
 		data = new Data(nameOfPropertiesFile, args);
 
 		// Aktivitaet #1 Ausgabe Data (Parameter von Properties-File, Argumente)
