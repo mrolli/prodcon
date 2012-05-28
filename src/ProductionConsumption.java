@@ -1,7 +1,9 @@
+import java.util.ArrayList;
+
 /*
  * Selbstdeklaration Lösungsanteile
  * --------------------------------
- * Pflichtanteil 50%: ja/nein
+ * Pflichtanteil 50%: ja
  * 
  * Fehler:
  * 
@@ -38,39 +40,137 @@
  * @author hans.roethlisberger@bfh.ch
  * @version V15.04.2012
  */
-public class ProductionConsumption {
-	/**
-	 * Aktiviert die Applikation <i>ProductionConsumption</i>. Als Ausgangsbasis
-	 * werden die definierten Parameter ausgegeben.
-	 * <p>
-	 * Normalerweise wird die Methode erweitert, indem die weitere Funktionalität
-	 * (z.B. aktivieren von Threads) implementiert wird.
-	 * 
-	 * @param args
-	 *           Argumente die beim Starten der Applikation
-	 *           <i>ProductionConsumption</i> definiert wurden.
-	 */
+public final class ProductionConsumption {
+    /**
+     * Aktiviert die Applikation <i>ProductionConsumption</i>. Als Ausgangsbasis
+     * werden die definierten Parameter ausgegeben.
+     * <p>
+     * Normalerweise wird die Methode erweitert, indem die weitere
+     * Funktionalität (z.B. aktivieren von Threads) implementiert wird.
+     * 
+     * @param args
+     *            Argumente die beim Starten der Applikation
+     *            <i>ProductionConsumption</i> definiert wurden.
+     * @throws InterruptedException
+     *             In case main thrad was interrupted
+     */
+    public static void main(final String[] args) throws InterruptedException {
+        // Einlesen Properties-Daten
+        final Data data;
+        // Name von Properties-File als Argument
+        String nameOfPropertiesFile = "";
 
-	public static void main(String[] args) {
-		// Einlesen Properties-Daten
-		final Data data;
-		// Name von Properties-File als Argument
-		String nameOfPropertiesFile = "";
+        // Argument könnte Name für Properties-File sein
+        if (args.length > 0) {
+            try {
+                Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                // Wenn Arg. ein String ist, als Filename interpretieren
+                nameOfPropertiesFile = args[0];
+            }
+        }
 
-		// Argument könnte Name für Properties-File sein
-		if (args.length > 0) {
-			try {
-				Integer.parseInt(args[0]);
-			} catch (NumberFormatException e) {
-				// Wenn Arg. ein String ist, als Filename interpretieren
-				nameOfPropertiesFile = args[0];
-			}
-		}
+        // Objekt erzeugen, Properties-Definitionen sowie Argumente prüfen
+        data = new Data(nameOfPropertiesFile, args);
 
-		// Objekt erzeugen, Properties-Definitionen sowie Argumente prüfen
-		data = new Data(nameOfPropertiesFile, args);
+        // Prioritaet main-Thread festlegen
+        Thread.currentThread().setPriority(data.getMainPriority());
 
-		// Aktivitaet #1 Ausgabe Data (Parameter von Properties-File, Argumente)
-		data.printData();
-	}
+        // Aktivitaet #1: Ausgabe Data (Parameter von Properties-File,
+        // Argumente)
+        data.printData();
+
+        // Generate the store according properites definitions.
+        Store store = new Store(data.getMinimalStoreSize(), data.getMaximalStoreSize(),
+                data.getMonitorStoreIsFair());
+        AbstractWorker.setStore(store);
+
+        // Generate the global bookkeeper object
+        AbstractWorker.setBookkeeper(new Bookkeeper());
+
+        // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
+        String format = "\n Threads:\n Name: %s\t Id: %d\t Prioritaet: %d\t Zustand: %s";
+        System.out.printf(format, Thread.currentThread().getName(), Thread.currentThread().getId(),
+                Thread.currentThread().getPriority(), Thread.currentThread().getState());
+
+        int totalNumOfThreads = data.getNumberOfProducers() + data.getNumberOfConsumers();
+        if (!data.getNameOfInspector().equals("none")) {
+            totalNumOfThreads++;
+        }
+
+        ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
+        ArrayList<Producer> myProducers = new ArrayList<Producer>(data.getNumberOfProducers());
+        // Produzenten-Threads erzeugen und speichern
+        for (int i = 1; i <= data.getNumberOfProducers(); i++) {
+            Producer p = new Producer(data.getLotDefaultProduction(), data.getLotFactorProduction());
+            myProducers.add(p);
+
+            Thread t = new Thread(p, data.getBaseNameOfProducers() + i);
+            myThreads.add(t);
+            t.setPriority(5);
+            t.start();
+        }
+
+        // Konsumenten-Threads erzeugen und speichern
+        for (int i = 1; i <= data.getNumberOfConsumers(); i++) {
+            Consumer c = new Consumer(data.getLotDefaultConsumption(),
+                    data.getLotFactorConsumption());
+
+            Thread t = new Thread(c, data.getBaseNameOfConsumers() + i);
+            myThreads.add(t);
+            t.setPriority(5);
+            t.start();
+        }
+
+        // Aktivitaet #4: Ausgabe von PRODUKTION/KONSUMATION WIRD GESTARTET
+        System.out.print("\n\n PRODUKTION/KONSUMATION WIRD GESTARTET !!!!\n");
+
+        Thread.sleep(data.getTimeToRun() * 1000);
+
+        // Aktivitaet #7: Alle Thread werden interrupted
+        System.out.printf("\n\n%s: Alle Threads werden nun interrupted!!\n", Thread
+                .currentThread().getName());
+
+        // Threads terminieren und synchronisieren
+        for (Thread t : myThreads) {
+            if (t.isAlive()) {
+                t.interrupt();
+            }
+        }
+
+        // Aktivitaet #8: Alle threads sind interrupted
+        System.out.printf("\n%s: Alle Threads interrupted!!\n\n", Thread.currentThread()
+                .getName());
+
+        // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE GESTOPPT
+        System.out.print("\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
+
+        // Threads terminieren und synchronisieren
+        for (Thread t : myThreads) {
+            if (t.isAlive()) {
+                t.join();
+            }
+        }
+
+        // Aktivitaet #12: Ausgabe der abschliessenden Statistik
+        Bookkeeper bookkeeper = AbstractWorker.getBookkeeper();
+        long transfer = 0;
+        for (Producer p : myProducers) {
+            transfer += p.getCurrentTransfer();
+        }
+        System.out.printf("\n %s Summen):", Thread.currentThread().getName());
+        System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
+        System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
+        System.out.printf("\n Produktion: %d", bookkeeper.getProductsProduced());
+        System.out.printf("\n Konsumation: %d", bookkeeper.getProductsConsumed());
+        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", transfer);
+        System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
+        System.out.printf("\n Anzahl Inspektionen: %d", 0);
+    }
+
+    /**
+     * Private constructor; forbid class instantiation.
+     */
+    private ProductionConsumption() {
+    }
 }
