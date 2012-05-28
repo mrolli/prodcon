@@ -87,12 +87,8 @@ public final class ProductionConsumption {
 
         // Generate the global bookkeeper object
         AbstractWorker.setBookkeeper(new Bookkeeper());
-
-        // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
-        String format = "\n Threads:\n Name: %s\tId: %d\tPrioritaet: %d\tZustand: %s";
-        System.out.printf(format, Thread.currentThread().getName(), Thread.currentThread().getId(),
-                Thread.currentThread().getPriority(), Thread.currentThread().getState());
-
+        // Generate the global information printer
+        AbstractWorker.setPrinter(new InfoPrinter());
 
         // Thread handling starten und Produktions/Konsumationsstart und -Ende
         // synchronisieren
@@ -119,6 +115,9 @@ public final class ProductionConsumption {
                         System.out.print("\n\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
                     }
                 }));
+        //AbstractWorker.setStartSortBarrier(new SortingBarrier(totalNumOfThreads + 1));
+        //AbstractWorker.setEndSortBarrier(new SortingBarrier(totalNumOfThreads));
+        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads + 1);
 
         /* Threads erzeugen */
         ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
@@ -147,14 +146,19 @@ public final class ProductionConsumption {
             t.start();
         }
 
-        // Aktivitaet #3: Ausgabe von PRODUKTION/KONSUMATION WIRD GESTARTET
-        // main-Methode löst als letzter nun aus.
+
+        // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
+        System.out.println("\n Threads:");
+        AbstractWorker.getPrinter().printThreadInformation();
         AbstractWorker.getStartBarrier().queueMe();
+
+        // queue zurücksetzen
+        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads);
 
         Thread.sleep(data.getTimeToRun() * 1000);
 
         // Aktivitaet #7: Alle Thread werden interrupted
-        System.out.printf("\n\n%s: Alle Threads werden nun interrupted!!\n", Thread
+        System.out.printf("\n\n %s: Alle Threads werden nun interrupted!!\n", Thread
                 .currentThread().getName());
 
         // Threads terminieren und synchronisieren
@@ -165,7 +169,7 @@ public final class ProductionConsumption {
         }
 
         // Aktivitaet #8: Alle threads sind interrupted
-        System.out.printf("\n\n%s: Alle Threads interrupted!!\n\n", Thread.currentThread()
+        System.out.printf("\n\n %s: Alle Threads interrupted!!\n\n", Thread.currentThread()
                 .getName());
 
         // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE GESTOPPT

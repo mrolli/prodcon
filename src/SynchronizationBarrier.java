@@ -1,6 +1,6 @@
 
 /**
- * Barrier for synchronisation purposes (heavy influenced by class CyclicBarrier).
+ * Barrier for synchronisation purposes (heavily influenced by class CyclicBarrier).
  * <p>
  * Threads are queued unless defined thread count has been reached. When this happens
  * the barrier is tripped and all threads are notified. The barrier command gets run
@@ -67,7 +67,7 @@ public class SynchronizationBarrier {
             try {
                 wait();
             } catch (InterruptedException e) {
-
+                // ignored
             }
         }
         tripped = true;
