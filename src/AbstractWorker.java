@@ -25,6 +25,16 @@ abstract class AbstractWorker {
     private static Bookkeeper bookkeeper;
 
     /**
+     * Barrier to synchronize start production/consumption.
+     */
+    private static SynchronizationBarrier startBarrier;
+
+    /**
+     * Barrier to synchronize end of production/consumption.
+     */
+    private static SynchronizationBarrier stopBarrier;
+
+    /**
      * @return the store
      */
     public static Store getStore() {
@@ -71,6 +81,56 @@ abstract class AbstractWorker {
     }
 
     /**
+     * Get the start barrier.
+     *
+     * @return startBarrier
+     */
+    public static SynchronizationBarrier getStartBarrier() {
+        if (startBarrier == null) {
+            throw new RuntimeException("No start barrier has been setup!");
+        }
+        return startBarrier;
+    }
+
+    /**
+     * Set the start barrier.
+     *
+     * @param barrier
+     *            the startStopBarrier to set
+     */
+    public static void setStartBarrier(final SynchronizationBarrier barrier) {
+        if (AbstractWorker.startBarrier != null) {
+            throw new RuntimeException("A start barrier has already been setup!");
+        }
+        AbstractWorker.startBarrier = barrier;
+    }
+
+    /**
+     * Get the stop barrier.
+     *
+     * @return stopBarrier
+     */
+    public static SynchronizationBarrier getStopBarrier() {
+        if (stopBarrier == null) {
+            throw new RuntimeException("No stop barrier has been setup!");
+        }
+        return stopBarrier;
+    }
+
+    /**
+     * Set the start/stop barrier.
+     *
+     * @param barrier
+     *            the startStopBarrier to set
+     */
+    public static void setStopBarrier(final SynchronizationBarrier barrier) {
+        if (AbstractWorker.stopBarrier != null) {
+            throw new RuntimeException("A stop barrier has already been setup!");
+        }
+        AbstractWorker.stopBarrier = barrier;
+    }
+
+    /**
      * Returns a random lot size within configured range.
      *
      * @param lotMinSize
@@ -113,12 +173,12 @@ abstract class AbstractWorker {
      *            Sum of products produced/consumed by current thread
      */
     protected void printFinalSummary(final long sumLots, final long sumProducts) {
-        String task = "Produktion";
+        String task = "Produktion:  ";
         if (this instanceof Consumer) {
-            task = "Konsumation";
+            task = "Konsumation: ";
         }
 
-        System.out.printf("\n %s:\tLose: %d\t%s: %d", Thread.currentThread().getName(),
+        System.out.printf("\n %s\tLose: %d\t%s %d", Thread.currentThread().getName(),
                 sumLots, task, sumProducts);
     }
 

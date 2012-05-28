@@ -29,7 +29,7 @@ public class Consumer extends AbstractWorker implements Runnable {
      * <p>
      * The consumer has a dependency to a store where it retrieves the products
      * it consumes.
-     * 
+     *
      * @param lotDefaultSize
      *            Default size of one lot
      * @param lotMaxNum
@@ -45,6 +45,9 @@ public class Consumer extends AbstractWorker implements Runnable {
     public void run() {
         // Aktivitaet #2: Ausgabe der Thread-Daten
         printThreadInformation();
+
+        // Aktivitaet #3: Synchronisation für Produktionsstart
+        getStartBarrier().queueMe();
 
         while (!Thread.currentThread().isInterrupted()) {
             int lotSize = getRandomLotSize(lotMinSize, lotFactor);
@@ -72,6 +75,9 @@ public class Consumer extends AbstractWorker implements Runnable {
             printCurrentData(sumLotsConsumed, sumProductsConsumed);
 
         }
+
+        // Aktivitaet #9: Synchronisation für Konsumationsende
+        getStopBarrier().queueMe();
 
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
         printFinalSummary(sumLotsConsumed, sumProductsConsumed);
