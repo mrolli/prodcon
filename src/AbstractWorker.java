@@ -2,7 +2,7 @@ import java.util.Random;
 
 /**
  * Abstract base class for all workers.
- * 
+ *
  * @author mrolli
  */
 abstract class AbstractWorker {
@@ -36,7 +36,7 @@ abstract class AbstractWorker {
 
     /**
      * Set the store used by all worker threads.
-     * 
+     *
      * @param staticStore
      *            Static store
      */
@@ -59,7 +59,7 @@ abstract class AbstractWorker {
 
     /**
      * Set the bookkeeper used by all worker threads.
-     * 
+     *
      * @param staticBookkeeper
      *            Static bookkeeper
      */
@@ -72,7 +72,7 @@ abstract class AbstractWorker {
 
     /**
      * Returns a random lot size within configured range.
-     * 
+     *
      * @param lotMinSize
      *            Minimal lot size
      * @param lotFactor
@@ -94,7 +94,7 @@ abstract class AbstractWorker {
 
     /**
      * Aktivitaet #5: Prints out production/consumption data of current thread.
-     * 
+     *
      * @param sumLots
      *            Sum of lots produced/consumed by current thread
      * @param sumProducts
@@ -106,7 +106,7 @@ abstract class AbstractWorker {
 
     /**
      * Aktivitaet #11: Ausgabe der Thread-Aktivitaeten.
-     * 
+     *
      * @param sumLots
      *            Sum of lots produced/consumed by current thread
      * @param sumProducts
@@ -114,7 +114,7 @@ abstract class AbstractWorker {
      */
     protected void printFinalSummary(final long sumLots, final long sumProducts) {
         String task = "Produktion";
-        if (getClass().equals("Consumer")) {
+        if (this instanceof Consumer) {
             task = "Konsumation";
         }
 
