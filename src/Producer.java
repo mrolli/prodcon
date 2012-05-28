@@ -33,7 +33,7 @@ public class Producer extends AbstractWorker implements Runnable {
      * <p>
      * The producer has a dependency to a store where it delivers the products
      * it produces.
-     * 
+     *
      * @param lotDefaultSize
      *            Default size of one lot
      * @param lotMaxNum
@@ -48,6 +48,9 @@ public class Producer extends AbstractWorker implements Runnable {
     public void run() {
         // Aktivitaet #2: Ausgabe der Thread-Daten
         printThreadInformation();
+
+        // Aktivitaet #3: Synchronisation für Produktionsstart
+        getStartBarrier().queueMe();
 
         while (!Thread.currentThread().isInterrupted()) {
             int lotSize = getRandomLotSize(lotMinSize, lotFactor);
@@ -73,13 +76,16 @@ public class Producer extends AbstractWorker implements Runnable {
             }
         }
 
+        // Aktivitaet #9: Synchronisation für Produktionsende
+        getStopBarrier().queueMe();
+
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
         printFinalSummary(sumLotsProduced, sumProductsProduced);
     }
 
     /**
      * Returns the number of products in transfer.
-     * 
+     *
      * @return The number of transfer products
      */
     public int getCurrentTransfer() {

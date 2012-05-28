@@ -4,26 +4,26 @@ import java.util.ArrayList;
  * Selbstdeklaration Lösungsanteile
  * --------------------------------
  * Pflichtanteil 50%: ja
- * 
+ *
  * Fehler:
- * 
- * 
+ *
+ *
  * Erweiterungen:
- * 
+ *
  * Prioritäten 5%: ja/nein
  * Synchr. Ausgabe Thread-Daten #2, 11 20%: ja/nein
  * Threads Start/Ende synchr. #3, 9 20%: ja/nein
- * 
+ *
  * Fehler:
- * 
- * 
+ *
+ *
  * Inspektor-Thread: ja/nein
  * Aktivität #2,6,11 10%: ja/nein
  * Aktiv wenn Lose abgeschlossen #6 10%: ja/nein
- * 
+ *
  * Fehler:
- * 
- * 
+ *
+ *
  * Erwarteter Lösungsanteil: xx%
  */
 
@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * <p>
  * Die Klasse ist durch die Studierenden entsprechend der Aufgabenstellung zu
  * erweitern.
- * 
+ *
  * @author hans.roethlisberger@bfh.ch
  * @version V15.04.2012
  */
@@ -47,7 +47,7 @@ public final class ProductionConsumption {
      * <p>
      * Normalerweise wird die Methode erweitert, indem die weitere
      * Funktionalität (z.B. aktivieren von Threads) implementiert wird.
-     * 
+     *
      * @param args
      *            Argumente die beim Starten der Applikation
      *            <i>ProductionConsumption</i> definiert wurden.
@@ -89,20 +89,45 @@ public final class ProductionConsumption {
         AbstractWorker.setBookkeeper(new Bookkeeper());
 
         // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
-        String format = "\n Threads:\n Name: %s\t Id: %d\t Prioritaet: %d\t Zustand: %s";
+        String format = "\n Threads:\n Name: %s\tId: %d\tPrioritaet: %d\tZustand: %s";
         System.out.printf(format, Thread.currentThread().getName(), Thread.currentThread().getId(),
                 Thread.currentThread().getPriority(), Thread.currentThread().getState());
 
+
+        // Thread handling starten und Produktions/Konsumationsstart und -Ende
+        // synchronisieren
         int totalNumOfThreads = data.getNumberOfProducers() + data.getNumberOfConsumers();
         if (!data.getNameOfInspector().equals("none")) {
             totalNumOfThreads++;
         }
+        AbstractWorker.setStartBarrier(new SynchronizationBarrier(totalNumOfThreads + 1,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Aktivitaet #4: Ausgabe von PRODUKTION/KONSUMATION
+                        // WIRD GESTARTET
+                        System.out.print("\n\n\n PRODUKTION/KONSUMATION WIRD GESTARTET !!!!\n\n");
+                    }
+                }));
 
+        AbstractWorker.setStopBarrier(new SynchronizationBarrier(totalNumOfThreads + 1,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE
+                        // GESTOPPT
+                        System.out.print("\n\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
+                    }
+                }));
+
+        /* Threads erzeugen */
         ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
+        // Produzenten werden für Transfersummen unten weider benötigt
         ArrayList<Producer> myProducers = new ArrayList<Producer>(data.getNumberOfProducers());
         // Produzenten-Threads erzeugen und speichern
         for (int i = 1; i <= data.getNumberOfProducers(); i++) {
-            Producer p = new Producer(data.getLotDefaultProduction(), data.getLotFactorProduction());
+            Producer p = new Producer(data.getLotDefaultProduction(),
+                    data.getLotFactorProduction());
             myProducers.add(p);
 
             Thread t = new Thread(p, data.getBaseNameOfProducers() + i);
@@ -122,8 +147,9 @@ public final class ProductionConsumption {
             t.start();
         }
 
-        // Aktivitaet #4: Ausgabe von PRODUKTION/KONSUMATION WIRD GESTARTET
-        System.out.print("\n\n PRODUKTION/KONSUMATION WIRD GESTARTET !!!!\n");
+        // Aktivitaet #3: Ausgabe von PRODUKTION/KONSUMATION WIRD GESTARTET
+        // main-Methode löst als letzter nun aus.
+        AbstractWorker.getStartBarrier().queueMe();
 
         Thread.sleep(data.getTimeToRun() * 1000);
 
@@ -139,11 +165,12 @@ public final class ProductionConsumption {
         }
 
         // Aktivitaet #8: Alle threads sind interrupted
-        System.out.printf("\n%s: Alle Threads interrupted!!\n\n", Thread.currentThread()
+        System.out.printf("\n\n%s: Alle Threads interrupted!!\n\n", Thread.currentThread()
                 .getName());
 
         // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE GESTOPPT
-        System.out.print("\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
+        // main-Methode löst als letzter nun aus.
+        AbstractWorker.getStopBarrier().queueMe();
 
         // Threads terminieren und synchronisieren
         for (Thread t : myThreads) {
@@ -158,7 +185,7 @@ public final class ProductionConsumption {
         for (Producer p : myProducers) {
             transfer += p.getCurrentTransfer();
         }
-        System.out.printf("\n %s Summen):", Thread.currentThread().getName());
+        System.out.printf("\n\n %s (Summen):", Thread.currentThread().getName());
         System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
         System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
         System.out.printf("\n Produktion: %d", bookkeeper.getProductsProduced());
@@ -166,6 +193,8 @@ public final class ProductionConsumption {
         System.out.printf("\n In Auslieferung an Lager (Transfer): %d", transfer);
         System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
         System.out.printf("\n Anzahl Inspektionen: %d", 0);
+        System.out.println();
+        System.out.println();
     }
 
     /**
