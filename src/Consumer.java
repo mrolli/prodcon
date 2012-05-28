@@ -44,10 +44,12 @@ public class Consumer extends AbstractWorker implements Runnable {
     @Override
     public void run() {
         // Aktivitaet #2: Ausgabe der Thread-Daten
-        printThreadInformation();
+        getPrinter().printThreadInformation();
 
         // Aktivitaet #3: Synchronisation für Produktionsstart
         getStartBarrier().queueMe();
+
+
 
         while (!Thread.currentThread().isInterrupted()) {
             int lotSize = getRandomLotSize(lotMinSize, lotFactor);
@@ -72,7 +74,7 @@ public class Consumer extends AbstractWorker implements Runnable {
             }
 
             // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentData(sumLotsConsumed, sumProductsConsumed);
+            getPrinter().printCurrentData(sumLotsConsumed, sumProductsConsumed);
 
         }
 
@@ -80,6 +82,6 @@ public class Consumer extends AbstractWorker implements Runnable {
         getStopBarrier().queueMe();
 
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
-        printFinalSummary(sumLotsConsumed, sumProductsConsumed);
+        getPrinter().printFinalSummary("Konsumation:", sumLotsConsumed, sumProductsConsumed);
     }
 }

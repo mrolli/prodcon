@@ -47,7 +47,7 @@ public class Producer extends AbstractWorker implements Runnable {
     @Override
     public void run() {
         // Aktivitaet #2: Ausgabe der Thread-Daten
-        printThreadInformation();
+        getPrinter().printThreadInformation();
 
         // Aktivitaet #3: Synchronisation für Produktionsstart
         getStartBarrier().queueMe();
@@ -65,7 +65,7 @@ public class Producer extends AbstractWorker implements Runnable {
             getBookkeeper().increaseLotsProduces();
 
             // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentData(sumLotsProduced, sumProductsProduced);
+            getPrinter().printCurrentData(sumLotsProduced, sumProductsProduced);
 
             // Put into store
             try {
@@ -79,8 +79,9 @@ public class Producer extends AbstractWorker implements Runnable {
         // Aktivitaet #9: Synchronisation für Produktionsende
         getStopBarrier().queueMe();
 
-        // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
-        printFinalSummary(sumLotsProduced, sumProductsProduced);
+        // Aktivität #11:  Ausgabe der Thread-Aktivitaeten
+        getPrinter().printFinalSummary("Produktion:", sumLotsProduced, sumProductsProduced);
+
     }
 
     /**
