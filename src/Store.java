@@ -90,11 +90,10 @@ public class Store {
      * 
      * @param num
      *            Amount of products to request
-     * @return Amount of products
      * @throws InterruptedException
      *             In case a thread in the waiting queue was interrupted
      */
-    public int take(final int num) throws InterruptedException {
+    public void take(final int num) throws InterruptedException {
         storeLock.lock();
         try {
             while (currentStock - num < minStoreSize) {
@@ -105,16 +104,22 @@ public class Store {
             // Notify all producers as we do not know how much the next consumer
             // would like consume.
             notFull.signalAll();
-
-            return num;
         } finally {
             storeLock.unlock();
         }
     }
 
-    @Override
-    public String toString() {
-        return String.format("Store[min=%s;max=%s;current=%s;fair:%s]", minStoreSize, maxStoreSize,
-                currentStock, storeLock.isFair());
+    /**
+     * Returns the current number of products in stock.
+     * 
+     * @return The number of products in stock
+     */
+    public int getCurrentStock() {
+        storeLock.lock();
+        try {
+            return currentStock;
+        } finally {
+            storeLock.unlock();
+        }
     }
 }

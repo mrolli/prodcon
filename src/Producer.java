@@ -1,23 +1,8 @@
-import java.util.Random;
-
 /**
  * @author mrolli
  *
  */
-public class Producer extends Thread {
-    /**
-     * Random integer generator for lot number.
-     */
-    private static Random randomLotGenerator;
-    static {
-        randomLotGenerator = new Random();
-    }
-
-    /**
-     * The store the producer uses to deliver its produced products.
-     */
-    private final Store store;
-
+public class Producer extends AbstractWorker implements Runnable {
     /**
      * Size of one lot.
      */
@@ -49,65 +34,55 @@ public class Producer extends Thread {
      * The producer has a dependency to a store where it delivers the products
      * it produces.
      * 
-     * @param targetStore
-     *            The store to deliver to
      * @param lotDefaultSize
      *            Default size of one lot
      * @param lotMaxNum
      *            Maximal number of lots to produce at once
      */
-    public Producer(final Store targetStore, final int lotDefaultSize, final int lotMaxNum) {
-        store = targetStore;
+    public Producer(final int lotDefaultSize, final int lotMaxNum) {
         lotMinSize = lotDefaultSize;
         lotFactor = lotMaxNum;
     }
 
     @Override
     public void run() {
-        printThread();
+        // Aktivitaet #2: Ausgabe der Thread-Daten
+        printThreadInformation();
 
         while (!Thread.currentThread().isInterrupted()) {
-            int currentLot = 0;
-            int lotSize = getRandomLotSize();
+            int lotSize = getRandomLotSize(lotMinSize, lotFactor);
 
             // Produce a lot
             for (int i = 0; i < lotSize; i++) {
-                currentLot++;
                 sumProductsProduced++;
-                // @TODO increase global product production counter
+                getBookkeeper().increaseProductsProduced();
             }
+            transfer = lotSize;
             sumLotsProduced++;
-            // @TODO increase global lot production counter
+            getBookkeeper().increaseLotsProduces();
 
-            System.out.printf("%s: %d %d  ", Thread.currentThread().getName(), sumLotsProduced,
-                    sumProductsProduced);
+            // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
+            printCurrentData(sumLotsProduced, sumProductsProduced);
 
             // Put into store
             try {
-                transfer = currentLot;
-                store.put(transfer);
+                getStore().put(transfer);
                 transfer = 0;
             } catch (InterruptedException e) {
-
+                Thread.currentThread().interrupt();
             }
         }
+
+        // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
+        printFinalSummary(sumLotsProduced, sumProductsProduced);
     }
 
     /**
-     * Prints out thread information.
-     */
-    public void printThread() {
-        String format = "Name: %s\t Id: %d\t Prioritaet: %d\t Zustand: %s\n";
-        System.out.printf(format, Thread.currentThread().getName(), Thread.currentThread().getId(),
-                Thread.currentThread().getPriority(), Thread.currentThread().getState());
-    }
-
-    /**
-     * Returns a random lot size within configured range.
+     * Returns the number of products in transfer.
      * 
-     * @return Random lot size
+     * @return The number of transfer products
      */
-    private int getRandomLotSize() {
-        return lotMinSize * (randomLotGenerator.nextInt(lotFactor) + 1);
+    public int getCurrentTransfer() {
+        return transfer;
     }
 }

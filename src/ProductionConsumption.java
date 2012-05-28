@@ -1,8 +1,9 @@
+import java.util.ArrayList;
 
 /*
  * Selbstdeklaration Lösungsanteile
  * --------------------------------
- * Pflichtanteil 50%: ja/nein
+ * Pflichtanteil 50%: ja
  * 
  * Fehler:
  * 
@@ -39,20 +40,21 @@
  * @author hans.roethlisberger@bfh.ch
  * @version V15.04.2012
  */
-public class ProductionConsumption {
+public final class ProductionConsumption {
     /**
      * Aktiviert die Applikation <i>ProductionConsumption</i>. Als Ausgangsbasis
      * werden die definierten Parameter ausgegeben.
      * <p>
-     * Normalerweise wird die Methode erweitert, indem die weitere Funktionalität
-     * (z.B. aktivieren von Threads) implementiert wird.
+     * Normalerweise wird die Methode erweitert, indem die weitere
+     * Funktionalität (z.B. aktivieren von Threads) implementiert wird.
      * 
      * @param args
-     *           Argumente die beim Starten der Applikation
-     *           <i>ProductionConsumption</i> definiert wurden.
+     *            Argumente die beim Starten der Applikation
+     *            <i>ProductionConsumption</i> definiert wurden.
+     * @throws InterruptedException
+     *             In case main thrad was interrupted
      */
-
-    public static void main(String[] args) {
+    public static void main(final String[] args) throws InterruptedException {
         // Einlesen Properties-Daten
         final Data data;
         // Name von Properties-File als Argument
@@ -71,71 +73,104 @@ public class ProductionConsumption {
         // Objekt erzeugen, Properties-Definitionen sowie Argumente prüfen
         data = new Data(nameOfPropertiesFile, args);
 
-        // Priorität main-Thread festlegen
+        // Prioritaet main-Thread festlegen
         Thread.currentThread().setPriority(data.getMainPriority());
 
-        // Aktivitaet #1 Ausgabe Data (Parameter von Properties-File, Argumente)
+        // Aktivitaet #1: Ausgabe Data (Parameter von Properties-File,
+        // Argumente)
         data.printData();
 
         // Generate the store according properites definitions.
         Store store = new Store(data.getMinimalStoreSize(), data.getMaximalStoreSize(),
                 data.getMonitorStoreIsFair());
+        AbstractWorker.setStore(store);
 
+        // Generate the global bookkeeper object
+        AbstractWorker.setBookkeeper(new Bookkeeper());
 
-        String format = "Name: %s\t Id: %d\t Prioritaet: %d\t Zustand: %s\n";
+        // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
+        String format = "\n Threads:\n Name: %s\t Id: %d\t Prioritaet: %d\t Zustand: %s";
         System.out.printf(format, Thread.currentThread().getName(), Thread.currentThread().getId(),
                 Thread.currentThread().getPriority(), Thread.currentThread().getState());
 
-        // generate producers; Aktivitaet #2
+        int totalNumOfThreads = data.getNumberOfProducers() + data.getNumberOfConsumers();
+        if (!data.getNameOfInspector().equals("none")) {
+            totalNumOfThreads++;
+        }
+
+        ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
+        ArrayList<Producer> myProducers = new ArrayList<Producer>(data.getNumberOfProducers());
+        // Produzenten-Threads erzeugen und speichern
         for (int i = 1; i <= data.getNumberOfProducers(); i++) {
-            Thread t = generateProducer(i, data, store);
+            Producer p = new Producer(data.getLotDefaultProduction(), data.getLotFactorProduction());
+            myProducers.add(p);
+
+            Thread t = new Thread(p, data.getBaseNameOfProducers() + i);
+            myThreads.add(t);
+            t.setPriority(5);
             t.start();
         }
 
-        // generate consumers; Aktivitaet #2
+        // Konsumenten-Threads erzeugen und speichern
         for (int i = 1; i <= data.getNumberOfConsumers(); i++) {
-            Thread t = generateConsumer(i, data, store);
+            Consumer c = new Consumer(data.getLotDefaultConsumption(),
+                    data.getLotFactorConsumption());
+
+            Thread t = new Thread(c, data.getBaseNameOfConsumers() + i);
+            myThreads.add(t);
+            t.setPriority(5);
             t.start();
         }
+
+        // Aktivitaet #4: Ausgabe von PRODUKTION/KONSUMATION WIRD GESTARTET
+        System.out.print("\n\n PRODUKTION/KONSUMATION WIRD GESTARTET !!!!\n");
+
+        Thread.sleep(data.getTimeToRun() * 1000);
+
+        // Aktivitaet #7: Alle Thread werden interrupted
+        System.out.printf("\n\n%s: Alle Threads werden nun interrupted!!\n", Thread
+                .currentThread().getName());
+
+        // Threads terminieren und synchronisieren
+        for (Thread t : myThreads) {
+            if (t.isAlive()) {
+                t.interrupt();
+            }
+        }
+
+        // Aktivitaet #8: Alle threads sind interrupted
+        System.out.printf("\n%s: Alle Threads interrupted!!\n\n", Thread.currentThread()
+                .getName());
+
+        // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE GESTOPPT
+        System.out.print("\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
+
+        // Threads terminieren und synchronisieren
+        for (Thread t : myThreads) {
+            if (t.isAlive()) {
+                t.join();
+            }
+        }
+
+        // Aktivitaet #12: Ausgabe der abschliessenden Statistik
+        Bookkeeper bookkeeper = AbstractWorker.getBookkeeper();
+        long transfer = 0;
+        for (Producer p : myProducers) {
+            transfer += p.getCurrentTransfer();
+        }
+        System.out.printf("\n %s Summen):", Thread.currentThread().getName());
+        System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
+        System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
+        System.out.printf("\n Produktion: %d", bookkeeper.getProductsProduced());
+        System.out.printf("\n Konsumation: %d", bookkeeper.getProductsConsumed());
+        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", transfer);
+        System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
+        System.out.printf("\n Anzahl Inspektionen: %d", 0);
     }
 
     /**
-     * Generates and returns a producer thread; Aktivitaet #2.
-     * 
-     * @param num
-     *            Thread number
-     * @param data
-     *            Properties definitions to aquire producer properties from
-     * @param store
-     *            Target Store object to use in the producer
-     * @return New generated and configured producer thread
+     * Private constructor; forbid class instantiation.
      */
-    private static Thread generateProducer(final int num, final Data data, final Store store) {
-        Producer p = new Producer(store, data.getLotDefaultProduction(),
-                data.getLotFactorProduction());
-
-        Thread t = new Thread(p, data.getBaseNameOfProducers() + num);
-        t.setPriority(5);
-        return t;
-    }
-
-    /**
-     * Generates and returns a consumer thread; Aktivitaet #2.
-     * 
-     * @param num
-     *            Thread number
-     * @param data
-     *            Properties definitions to aquire consumer properties from
-     * @param store
-     *            Target Store object to use in the consumer
-     * @return New generated and configured consumer thread
-     */
-    private static Thread generateConsumer(final int num, final Data data, final Store store) {
-        Consumer c = new Consumer(store, data.getLotDefaultConsumption(),
-                data.getLotFactorConsumption());
-
-        Thread t = new Thread(c, data.getBaseNameOfConsumers() + num);
-        t.setPriority(5);
-        return t;
+    private ProductionConsumption() {
     }
 }
