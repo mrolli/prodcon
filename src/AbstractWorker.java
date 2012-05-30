@@ -1,7 +1,7 @@
 import java.util.Random;
 
 /**
- * Abstract base class for all workers.
+ * Abstract base class for all worker threads.
  *
  * @author mrolli
  */
@@ -136,18 +136,6 @@ abstract class AbstractWorker {
     }
 
     /**
-     * Returns the information printer.
-     *
-     * @return Information printer
-     */
-    public static InfoPrinter getPrinter() {
-        if (printer == null) {
-            throw new RuntimeException("No information printer has been setup!");
-        }
-        return printer;
-    }
-
-    /**
      * Set the information print to use.
      *
      * @param printer Information printer
@@ -170,6 +158,43 @@ abstract class AbstractWorker {
      */
     protected int getRandomLotSize(final int lotMinSize, final int lotFactor) {
         return lotMinSize * (randomLotGenerator.nextInt(lotFactor) + 1);
+    }
+
+    /**
+     * Aktivitaet #5: Proxy method to InfoPrinter instance.
+     *
+     * @see InfoPrinter.printThradInformation()
+     */
+    protected void printThreadInformation() {
+        printer.printThreadInformation();
+    }
+
+    /**
+     * Aktivitaet #5: Proxy method to InfoPrinter instance.
+     *
+     * @see InfoPrinter.printCurrentData()
+     * @param sumLots
+     *            Sum of lots produced/consumed by current thread
+     * @param sumProducts
+     *            Sum of products produced/consumed by current thread
+     */
+    protected void printCurrentData(final long sumLots, final long sumProducts) {
+        printer.printCurrentData(sumLots, sumProducts);
+    }
+
+    /**
+     * Aktivitaet #11: Proxy method to InfoPrinter instance.
+     *
+     * @see InfoPrinter.printFinalSummary()
+     * @param type The type of action done (Production/Consumption)
+     * @param sumLots
+     *            Sum of lots produced/consumed by current thread
+     * @param sumProducts
+     *            Sum of products produced/consumed by current thread
+     */
+    protected void printFinalSummary(final String type, final long sumLots,
+            final long sumProducts) {
+        printer.printFinalSummary(type, sumLots, sumProducts);
     }
 }
 

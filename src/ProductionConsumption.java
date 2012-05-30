@@ -88,7 +88,8 @@ public final class ProductionConsumption {
         // Generate the global bookkeeper object
         AbstractWorker.setBookkeeper(new Bookkeeper());
         // Generate the global information printer
-        AbstractWorker.setPrinter(new InfoPrinter());
+        InfoPrinter printer = new InfoPrinter();
+        AbstractWorker.setPrinter(printer);
 
         // Thread handling starten und Produktions/Konsumationsstart und -Ende
         // synchronisieren
@@ -115,9 +116,7 @@ public final class ProductionConsumption {
                         System.out.print("\n\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
                     }
                 }));
-        //AbstractWorker.setStartSortBarrier(new SortingBarrier(totalNumOfThreads + 1));
-        //AbstractWorker.setEndSortBarrier(new SortingBarrier(totalNumOfThreads));
-        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads + 1);
+        printer.resetQueue(totalNumOfThreads + 1);
 
         /* Threads erzeugen */
         ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
@@ -148,12 +147,12 @@ public final class ProductionConsumption {
 
 
         // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
-        System.out.println("\n Threads:");
-        AbstractWorker.getPrinter().printThreadInformation();
+        System.out.print("\n Threads:");
+        printer.printThreadInformation();
         AbstractWorker.getStartBarrier().queueMe();
 
         // queue zurücksetzen
-        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads);
+        printer.resetQueue(totalNumOfThreads);
 
         Thread.sleep(data.getTimeToRun() * 1000);
 
