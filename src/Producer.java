@@ -14,11 +14,6 @@ public class Producer extends AbstractWorker implements Runnable {
     private final int lotFactor;
 
     /**
-     * Number of products in transfer.
-     */
-    private int transfer = 0;
-
-    /**
      * Total number of lots produced.
      */
     private long sumLotsProduced = 0;
@@ -60,17 +55,17 @@ public class Producer extends AbstractWorker implements Runnable {
                 sumProductsProduced++;
                 getBookkeeper().increaseProductsProduced();
             }
-            transfer = lotSize;
             sumLotsProduced++;
             getBookkeeper().increaseLotsProduces();
+            getBookkeeper().increaseTransfer(lotSize);
 
             // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
             printCurrentData(sumLotsProduced, sumProductsProduced);
 
             // Put into store
             try {
-                getStore().put(transfer);
-                transfer = 0;
+                getStore().put(lotSize);
+                getBookkeeper().decreaseTransfer(lotSize);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -82,14 +77,5 @@ public class Producer extends AbstractWorker implements Runnable {
         // Aktivität #11:  Ausgabe der Thread-Aktivitaeten
         printFinalSummary("Produktion:", sumLotsProduced, sumProductsProduced);
 
-    }
-
-    /**
-     * Returns the number of products in transfer.
-     *
-     * @return The number of transfer products
-     */
-    public int getCurrentTransfer() {
-        return transfer;
     }
 }

@@ -86,7 +86,8 @@ public final class ProductionConsumption {
         AbstractWorker.setStore(store);
 
         // Generate the global bookkeeper object
-        AbstractWorker.setBookkeeper(new Bookkeeper());
+        Bookkeeper bookkeeper = new Bookkeeper();
+        AbstractWorker.setBookkeeper(bookkeeper);
         // Generate the global information printer
         InfoPrinter printer = new InfoPrinter();
         AbstractWorker.setPrinter(printer);
@@ -183,17 +184,12 @@ public final class ProductionConsumption {
         }
 
         // Aktivitaet #12: Ausgabe der abschliessenden Statistik
-        Bookkeeper bookkeeper = AbstractWorker.getBookkeeper();
-        long transfer = 0;
-        for (Producer p : myProducers) {
-            transfer += p.getCurrentTransfer();
-        }
         System.out.printf("\n\n %s (Summen):", Thread.currentThread().getName());
         System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
         System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
         System.out.printf("\n Produktion: %d", bookkeeper.getProductsProduced());
         System.out.printf("\n Konsumation: %d", bookkeeper.getProductsConsumed());
-        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", transfer);
+        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", bookkeeper.getTransfer());
         System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
         System.out.printf("\n Anzahl Inspektionen: %d", 0);
         System.out.println();
