@@ -60,7 +60,7 @@ public class Producer extends AbstractWorker implements Runnable {
             getBookkeeper().increaseTransfer(lotSize);
 
             // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentData(sumLotsProduced, sumProductsProduced);
+            printCurrentThreadData(sumLotsProduced, sumProductsProduced);
 
             // Put into store
             try {

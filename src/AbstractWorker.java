@@ -170,16 +170,15 @@ abstract class AbstractWorker {
     }
 
     /**
-     * Aktivitaet #5: Proxy method to InfoPrinter instance.
+     * Aktivitaet #5: Prints out production/consumption data of current thread.
      *
-     * @see InfoPrinter.printCurrentData()
      * @param sumLots
      *            Sum of lots produced/consumed by current thread
      * @param sumProducts
      *            Sum of products produced/consumed by current thread
      */
-    protected void printCurrentData(final long sumLots, final long sumProducts) {
-        printer.printCurrentData(sumLots, sumProducts);
+    protected synchronized void printCurrentThreadData(final long sumLots, final long sumProducts) {
+        System.out.printf("%s: %d %d  ", Thread.currentThread().getName(), sumLots, sumProducts);
     }
 
     /**

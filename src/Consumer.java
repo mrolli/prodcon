@@ -74,7 +74,7 @@ public class Consumer extends AbstractWorker implements Runnable {
             }
 
             // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentData(sumLotsConsumed, sumProductsConsumed);
+            printCurrentThreadData(sumLotsConsumed, sumProductsConsumed);
 
         }
 

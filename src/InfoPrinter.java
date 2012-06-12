@@ -21,18 +21,6 @@ public class InfoPrinter {
     }
 
     /**
-     * Aktivitaet #5: Prints out production/consumption data of current thread.
-     *
-     * @param sumLots
-     *            Sum of lots produced/consumed by current thread
-     * @param sumProducts
-     *            Sum of products produced/consumed by current thread
-     */
-    protected synchronized void printCurrentData(final long sumLots, final long sumProducts) {
-        System.out.printf("%s: %d %d  ", Thread.currentThread().getName(), sumLots, sumProducts);
-    }
-
-    /**
      * Aktivitaet #2: Prints out the thread information of current thread.
      */
     protected synchronized void printThreadInformation() {
