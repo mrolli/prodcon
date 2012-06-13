@@ -61,7 +61,7 @@ public class SynchronizationBarrier {
     /**
      * Method to call to enlist a thread at the barrier.
      */
-    public synchronized void queueMe() {
+    public synchronized void queue() {
         seen++;
         while (parties > seen && !tripped) {
             try {

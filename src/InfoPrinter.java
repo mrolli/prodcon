@@ -60,9 +60,8 @@ public class InfoPrinter {
      * @param sumProducts
      *            Sum of products produced/consumed by current thread
      */
-    protected synchronized void printFinalSummary(final String type, final long sumLots,
-            final long sumProducts) {
-        // collect all threads
+    protected synchronized void printFinalSummary(final String message) {
+        // collect all producer/consumer threads
         queue.add(new Long(Thread.currentThread().getId()));
         while (queueTripLimit > queue.size() && !queueTripped) {
             try {
@@ -82,8 +81,7 @@ public class InfoPrinter {
             }
         }
         queue.remove();
-        System.out.printf("\n %-8s    Lose: %-12d    %-12s %d", Thread.currentThread().getName(),
-                sumLots, type, sumProducts);
+        System.out.print(message);
         notifyAll();
     }
 }

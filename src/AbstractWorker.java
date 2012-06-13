@@ -185,15 +185,10 @@ abstract class AbstractWorker {
      * Aktivitaet #11: Proxy method to InfoPrinter instance.
      *
      * @see InfoPrinter.printFinalSummary()
-     * @param type The type of action done (Production/Consumption)
-     * @param sumLots
-     *            Sum of lots produced/consumed by current thread
-     * @param sumProducts
-     *            Sum of products produced/consumed by current thread
+     * @param msg The message to print out
      */
-    protected void printFinalSummary(final String type, final long sumLots,
-            final long sumProducts) {
-        printer.printFinalSummary(type, sumLots, sumProducts);
+    protected void printFinalSummary(final String msg) {
+        printer.printFinalSummary(msg);
     }
 }
 

@@ -45,7 +45,7 @@ public class Producer extends AbstractWorker implements Runnable {
         printThreadInformation();
 
         // Aktivitaet #3: Synchronisation für Produktionsstart
-        getStartBarrier().queueMe();
+        getStartBarrier().queue();
 
         while (!Thread.currentThread().isInterrupted()) {
             int lotSize = getRandomLotSize(lotMinSize, lotFactor);
@@ -72,10 +72,14 @@ public class Producer extends AbstractWorker implements Runnable {
         }
 
         // Aktivitaet #9: Synchronisation für Produktionsende
-        getStopBarrier().queueMe();
+        getStopBarrier().queue();
 
-        // Aktivität #11:  Ausgabe der Thread-Aktivitaeten
-        printFinalSummary("Produktion:", sumLotsProduced, sumProductsProduced);
+        // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
+        String msg = String.format("\n %-8s    Lose: %-12d    Produktion %d",
+                Thread.currentThread().getName(),
+                sumLotsProduced,
+                sumProductsProduced);
+        printFinalSummary(msg);
 
     }
 }

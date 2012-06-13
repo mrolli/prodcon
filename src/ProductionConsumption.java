@@ -76,6 +76,8 @@ public final class ProductionConsumption {
         // Prioritaet main-Thread festlegen
         Thread.currentThread().setPriority(data.getMainPriority());
 
+        Inspector inspector = null;
+
         // Aktivitaet #1: Ausgabe Data (Parameter von Properties-File,
         // Argumente)
         data.printData();
@@ -121,13 +123,20 @@ public final class ProductionConsumption {
 
         /* Threads erzeugen */
         ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
-        // Produzenten werden für Transfersummen unten weider benötigt
-        ArrayList<Producer> myProducers = new ArrayList<Producer>(data.getNumberOfProducers());
+
+        // Inpektor generieren, falls erwünscht
+        if (!data.getNameOfInspector().equals("none")) {
+            inspector = new Inspector(data.getCycleTimeInspector());
+            Thread t = new Thread(inspector, data.getNameOfInspector());
+            myThreads.add(t);
+            t.setPriority(data.getInspectorPriority());
+            t.start();
+        }
+
         // Produzenten-Threads erzeugen und speichern
         for (int i = 1; i <= data.getNumberOfProducers(); i++) {
             Producer p = new Producer(data.getLotDefaultProduction(),
                     data.getLotFactorProduction());
-            myProducers.add(p);
 
             Thread t = new Thread(p, data.getBaseNameOfProducers() + i);
             myThreads.add(t);
@@ -150,7 +159,7 @@ public final class ProductionConsumption {
         // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
         System.out.print("\n Threads:");
         printer.printThreadInformation();
-        AbstractWorker.getStartBarrier().queueMe();
+        AbstractWorker.getStartBarrier().queue();
 
         // queue zurücksetzen
         printer.resetQueue(totalNumOfThreads);
@@ -174,7 +183,7 @@ public final class ProductionConsumption {
 
         // Aktivitaet #10: Ausgabe von PRODUKTION/KONSUMATION WURDE GESTOPPT
         // main-Methode löst als letzter nun aus.
-        AbstractWorker.getStopBarrier().queueMe();
+        AbstractWorker.getStopBarrier().queue();
 
         // Threads terminieren und synchronisieren
         for (Thread t : myThreads) {
@@ -184,6 +193,7 @@ public final class ProductionConsumption {
         }
 
         // Aktivitaet #12: Ausgabe der abschliessenden Statistik
+        int inspections = inspector == null ? 0 : inspector.getInspections();
         System.out.printf("\n\n %s (Summen):", Thread.currentThread().getName());
         System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
         System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
@@ -191,7 +201,7 @@ public final class ProductionConsumption {
         System.out.printf("\n Konsumation: %d", bookkeeper.getProductsConsumed());
         System.out.printf("\n In Auslieferung an Lager (Transfer): %d", bookkeeper.getTransfer());
         System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
-        System.out.printf("\n Anzahl Inspektionen: %d", 0);
+        System.out.printf("\n Anzahl Inspektionen: %d", inspections);
         System.out.println();
         System.out.println();
     }
