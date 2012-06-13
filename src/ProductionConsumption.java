@@ -86,9 +86,11 @@ public final class ProductionConsumption {
         AbstractWorker.setStore(store);
 
         // Generate the global bookkeeper object
-        AbstractWorker.setBookkeeper(new Bookkeeper());
+        Bookkeeper bookkeeper = new Bookkeeper();
+        AbstractWorker.setBookkeeper(bookkeeper);
         // Generate the global information printer
-        AbstractWorker.setPrinter(new InfoPrinter());
+        InfoPrinter printer = new InfoPrinter();
+        AbstractWorker.setPrinter(printer);
 
         // Thread handling starten und Produktions/Konsumationsstart und -Ende
         // synchronisieren
@@ -115,9 +117,7 @@ public final class ProductionConsumption {
                         System.out.print("\n\n\n PRODUKTION/KONSUMATION WURDE GESTOPPT!!!!\n");
                     }
                 }));
-        //AbstractWorker.setStartSortBarrier(new SortingBarrier(totalNumOfThreads + 1));
-        //AbstractWorker.setEndSortBarrier(new SortingBarrier(totalNumOfThreads));
-        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads + 1);
+        printer.resetQueue(totalNumOfThreads + 1);
 
         /* Threads erzeugen */
         ArrayList<Thread> myThreads = new ArrayList<Thread>(totalNumOfThreads);
@@ -148,12 +148,12 @@ public final class ProductionConsumption {
 
 
         // Aktivitaet #2: Ausgabe der Thread-Daten des main-Thread
-        System.out.println("\n Threads:");
-        AbstractWorker.getPrinter().printThreadInformation();
+        System.out.print("\n Threads:");
+        printer.printThreadInformation();
         AbstractWorker.getStartBarrier().queueMe();
 
         // queue zurücksetzen
-        AbstractWorker.getPrinter().resetQueue(totalNumOfThreads);
+        printer.resetQueue(totalNumOfThreads);
 
         Thread.sleep(data.getTimeToRun() * 1000);
 
@@ -184,17 +184,12 @@ public final class ProductionConsumption {
         }
 
         // Aktivitaet #12: Ausgabe der abschliessenden Statistik
-        Bookkeeper bookkeeper = AbstractWorker.getBookkeeper();
-        long transfer = 0;
-        for (Producer p : myProducers) {
-            transfer += p.getCurrentTransfer();
-        }
         System.out.printf("\n\n %s (Summen):", Thread.currentThread().getName());
         System.out.printf("\n Lose produziert: %d", bookkeeper.getLotsProduced());
         System.out.printf("\n Lose konsumiert: %d", bookkeeper.getLotsConsumed());
         System.out.printf("\n Produktion: %d", bookkeeper.getProductsProduced());
         System.out.printf("\n Konsumation: %d", bookkeeper.getProductsConsumed());
-        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", transfer);
+        System.out.printf("\n In Auslieferung an Lager (Transfer): %d", bookkeeper.getTransfer());
         System.out.printf("\n Lagerbestand: %d", store.getCurrentStock());
         System.out.printf("\n Anzahl Inspektionen: %d", 0);
         System.out.println();
