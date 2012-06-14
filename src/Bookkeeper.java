@@ -1,3 +1,4 @@
+
 /**
  * Simple storage class to account any number of lots and products produced and
  * consumed.
@@ -30,32 +31,46 @@ public class Bookkeeper {
      */
     private long transfer = 0;
 
+    private Object producerLock = new Object();
+
+    private Object consumerLock = new Object();
+
+    private Object transferLock = new Object();
+
     /**
      * Increases the number of lots produced.
      */
-    public synchronized void increaseLotsProduces() {
-        lotsProduced++;
+    public void increaseLotsProduces() {
+        synchronized (producerLock) {
+            lotsProduced++;
+        }
     }
 
     /**
      * Increases the number of lots consumed.
      */
-    public synchronized void increaseLotsConsumed() {
-        lotsConsumed++;
+    public void increaseLotsConsumed() {
+        synchronized (consumerLock) {
+            lotsConsumed++;
+        }
     }
 
     /**
      * Increases the number of products produced.
      */
-    public synchronized void increaseProductsProduced() {
-        productsProduced++;
+    public void increaseProductsProduced() {
+        synchronized (producerLock) {
+            productsProduced++;
+        }
     }
 
     /**
      * Increases the number of products consumed.
      */
-    public synchronized void increaseProductsConsumed() {
-        productsConsumed++;
+    public void increaseProductsConsumed() {
+        synchronized (consumerLock) {
+            productsConsumed++;
+        }
     }
 
     /**
@@ -63,8 +78,10 @@ public class Bookkeeper {
      *
      * @param deltaTransfer Delta transfer
      */
-    public synchronized void increaseTransfer(final long deltaTransfer) {
-        transfer += deltaTransfer;
+    public void increaseTransfer(final long deltaTransfer) {
+        synchronized (transferLock) {
+            transfer += deltaTransfer;
+        }
     }
 
     /**
@@ -72,8 +89,10 @@ public class Bookkeeper {
      *
      * @param deltaTransfer Delta transfer
      */
-    public synchronized void decreaseTransfer(final long deltaTransfer) {
-        transfer -= deltaTransfer;
+    public void decreaseTransfer(final long deltaTransfer) {
+        synchronized (transferLock) {
+            transfer -= deltaTransfer;
+        }
     }
 
     /**
@@ -81,8 +100,14 @@ public class Bookkeeper {
      *
      * @return Number of lots produced
      */
-    public synchronized long getLotsProduced() {
-        return lotsProduced;
+    public long getLotsProduced() {
+        synchronized (producerLock) {
+            synchronized (consumerLock) {
+                synchronized (transferLock) {
+                    return lotsProduced;
+                }
+            }
+        }
     }
 
     /**
@@ -90,8 +115,14 @@ public class Bookkeeper {
      *
      * @return Number of lots consumed
      */
-    public synchronized long getLotsConsumed() {
-        return lotsConsumed;
+    public long getLotsConsumed() {
+        synchronized (producerLock) {
+            synchronized (consumerLock) {
+                synchronized (transferLock) {
+                    return lotsConsumed;
+                }
+            }
+        }
     }
 
     /**
@@ -99,8 +130,14 @@ public class Bookkeeper {
      *
      * @return Number of products produced
      */
-    public synchronized long getProductsProduced() {
-        return productsProduced;
+    public long getProductsProduced() {
+        synchronized (producerLock) {
+            synchronized (consumerLock) {
+                synchronized (transferLock) {
+                    return productsProduced;
+                }
+            }
+        }
     }
 
     /**
@@ -108,8 +145,14 @@ public class Bookkeeper {
      *
      * @return Number of products consumed
      */
-    public synchronized long getProductsConsumed() {
-        return productsConsumed;
+    public long getProductsConsumed() {
+        synchronized (producerLock) {
+            synchronized (consumerLock) {
+                synchronized (transferLock) {
+                    return productsConsumed;
+                }
+            }
+        }
     }
 
     /**
@@ -118,6 +161,12 @@ public class Bookkeeper {
      * @return Number of products in transfer
      */
     public synchronized long getTransfer() {
-        return transfer;
+        synchronized (producerLock) {
+            synchronized (consumerLock) {
+                synchronized (transferLock) {
+                    return transfer;
+                }
+            }
+        }
     }
 }
