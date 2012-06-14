@@ -10,15 +10,15 @@ import java.util.ArrayList;
  *
  * Erweiterungen:
  *
- * Prioritäten 5%: ja/nein
- * Synchr. Ausgabe Thread-Daten #2, 11 20%: ja/nein
- * Threads Start/Ende synchr. #3, 9 20%: ja/nein
+ * Prioritäten 5%: ja
+ * Synchr. Ausgabe Thread-Daten #2, 11 20%: ja
+ * Threads Start/Ende synchr. #3, 9 20%: ja
  *
  * Fehler:
  *
  *
- * Inspektor-Thread: ja/nein
- * Aktivität #2,6,11 10%: ja/nein
+ * Inspektor-Thread: ja
+ * Aktivität #2,6,11 10%: ja
  * Aktiv wenn Lose abgeschlossen #6 10%: ja/nein
  *
  * Fehler:

@@ -23,6 +23,8 @@ public class Producer extends AbstractWorker implements Runnable {
      */
     private long sumProductsProduced = 0;
 
+    private int currentLot = 0;
+
     /**
      * Initializes a new producer runnable.
      * <p>
@@ -48,24 +50,31 @@ public class Producer extends AbstractWorker implements Runnable {
         getStartBarrier().queue();
 
         while (!Thread.currentThread().isInterrupted()) {
-            int lotSize = getRandomLotSize(lotMinSize, lotFactor);
+            if (currentLot == 0) {
+                int lotSize = getRandomLotSize(lotMinSize, lotFactor);
 
-            // Produce a lot
-            for (int i = 0; i < lotSize; i++) {
-                sumProductsProduced++;
-                getBookkeeper().increaseProductsProduced();
+                // Produce a lot
+                for (int i = 0; i < lotSize; i++) {
+                    currentLot++;
+                    sumProductsProduced++;
+                    getBookkeeper().increaseProductsProduced();
+                }
+                sumLotsProduced++;
+                getBookkeeper().increaseLotsProduces();
+                getBookkeeper().increaseTransfer(currentLot);
+
+                // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
+                printCurrentThreadData(sumLotsProduced, sumProductsProduced);
+
             }
-            sumLotsProduced++;
-            getBookkeeper().increaseLotsProduces();
-            getBookkeeper().increaseTransfer(lotSize);
-
-            // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentThreadData(sumLotsProduced, sumProductsProduced);
 
             // Put into store
             try {
-                getStore().put(lotSize);
-                getBookkeeper().decreaseTransfer(lotSize);
+                synchronized (this) {
+                    getStore().put(currentLot);
+                    getBookkeeper().decreaseTransfer(currentLot);
+                    currentLot = 0;
+                }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -75,10 +84,8 @@ public class Producer extends AbstractWorker implements Runnable {
         getStopBarrier().queue();
 
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
-        String msg = String.format("\n %-8s    Lose: %-12d    Produktion %d",
-                Thread.currentThread().getName(),
-                sumLotsProduced,
-                sumProductsProduced);
+        String msg = String.format("\n %-8s\tLose: %-15d\tProduktion:  %-15d\t Transfer: %-15d", Thread
+                .currentThread().getName(), sumLotsProduced, sumProductsProduced, currentLot);
         printFinalSummary(msg);
 
     }

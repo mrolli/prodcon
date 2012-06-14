@@ -82,7 +82,7 @@ public class Consumer extends AbstractWorker implements Runnable {
         getStopBarrier().queue();
 
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
-        String msg = String.format("\n %-8s    Lose: %-12d    Konsumation %d",
+        String msg = String.format("\n %-8s\tLose: %-12d\tKonsumation: %d",
                 Thread.currentThread().getName(),
                 sumLotsConsumed,
                 sumProductsConsumed);

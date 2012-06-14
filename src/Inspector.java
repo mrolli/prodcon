@@ -40,7 +40,7 @@ public class Inspector extends AbstractWorker implements Runnable {
         getStopBarrier().queue();
 
         // Aktivitaet #11: Ausgabe der Thread-Aktivitaeten
-        String msg = String.format("\n %-8s    Inspektionen: %d", getName(), getInspections());
+        String msg = String.format("\n %-8s\tInspektionen: %d", getName(), getInspections());
         printFinalSummary(msg);
     }
 
