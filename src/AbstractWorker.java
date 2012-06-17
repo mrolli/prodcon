@@ -25,6 +25,11 @@ abstract class AbstractWorker {
     private static Bookkeeper bookkeeper;
 
     /**
+     * The inspector.
+     */
+    private static Inspector inspector;
+
+    /**
      * Barrier to synchronize start production/consumption.
      */
     private static SynchronizationBarrier startBarrier;
@@ -38,6 +43,8 @@ abstract class AbstractWorker {
      * Information print to print statistics to system output.
      */
     private static InfoPrinter printer;
+
+    private static boolean shutdown;
 
     /**
      * @return the store
@@ -148,6 +155,38 @@ abstract class AbstractWorker {
     }
 
     /**
+     * Sets the inspector.
+     *
+     * @param inspector The inspector
+     */
+    public static void setInspector(final Inspector inspector) {
+        AbstractWorker.inspector = inspector;
+    }
+
+    /**
+     * Visits the inspector.
+     *
+     * This method is blocking if an inspection is running.
+     */
+    public static void visitInspector() throws InterruptedException {
+        if (AbstractWorker.inspector != null) {
+            AbstractWorker.inspector.visit();
+        }
+    }
+
+    /**
+     * Checks if an inspection is running
+     *
+     * @return True if inspection is running; false otherwise
+     */
+    public static boolean runningInspection() {
+        if (AbstractWorker.inspector != null) {
+            return AbstractWorker.inspector.isInspecting();
+        } else {
+            return false;
+        }
+    }
+    /**
      * Returns a random lot size within configured range.
      *
      * @param lotMinSize
@@ -189,6 +228,14 @@ abstract class AbstractWorker {
      */
     protected void printFinalSummary(final String msg) {
         printer.printFinalSummary(msg);
+    }
+
+    public boolean isShuttingDown() {
+        return shutdown;
+    }
+
+    public static void aquireShutdown() {
+        shutdown = true;
     }
 }
 

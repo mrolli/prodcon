@@ -5,7 +5,7 @@ import java.util.ArrayList;
  * --------------------------------
  * Pflichtanteil 50%: ja
  *
- * Fehler:
+ * Fehler: -
  *
  *
  * Erweiterungen:
@@ -19,12 +19,13 @@ import java.util.ArrayList;
  *
  * Inspektor-Thread: ja
  * Aktivität #2,6,11 10%: ja
- * Aktiv wenn Lose abgeschlossen #6 10%: ja/nein
+ * Aktiv wenn Lose abgeschlossen #6 10%: ja
  *
  * Fehler:
+ * Implementation der Inspektor-Synchronisation fehlerhaft -> oft
+ * Blockierungen möglich. Ich konnte den Fehler nicht eruieren. :-(
  *
- *
- * Erwarteter Lösungsanteil: xx%
+ * Erwarteter Lösungsanteil: 105%
  */
 
 /**
@@ -126,7 +127,8 @@ public final class ProductionConsumption {
 
         // Inpektor generieren, falls erwünscht
         if (!data.getNameOfInspector().equals("none")) {
-            inspector = new Inspector(data.getCycleTimeInspector());
+            inspector = new Inspector(data.getCycleTimeInspector(), myThreads);
+            AbstractWorker.setInspector(inspector);
             Thread t = new Thread(inspector, data.getNameOfInspector());
             myThreads.add(t);
             t.setPriority(data.getInspectorPriority());
@@ -171,6 +173,7 @@ public final class ProductionConsumption {
                 .currentThread().getName());
 
         // Threads terminieren und synchronisieren
+        AbstractWorker.aquireShutdown();
         for (Thread t : myThreads) {
             if (t.isAlive()) {
                 t.interrupt();

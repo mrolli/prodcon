@@ -52,30 +52,31 @@ public class Consumer extends AbstractWorker implements Runnable {
 
 
         while (!Thread.currentThread().isInterrupted()) {
-            int lotSize = getRandomLotSize(lotMinSize, lotFactor);
-
-            // Retrieve from store
             try {
-                getStore().take(lotSize);
+                int lotSize = getRandomLotSize(lotMinSize, lotFactor);
+
+                visitInspector();
+
+                if (!runningInspection()) {
+                    // Retrieve from store
+                    getStore().take(lotSize);
+
+                    // Consume the lot
+                    sumLotsConsumed++;
+                    getBookkeeper().increaseLotsConsumed();
+                    for (int i = 0; i < lotSize; i++) {
+                        sumProductsConsumed++;
+                        getBookkeeper().increaseProductsConsumed();
+                    }
+
+                    // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
+                    printCurrentThreadData(sumLotsConsumed, sumProductsConsumed);
+                }
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                if (!runningInspection()) {
+                    Thread.currentThread().interrupt();
+                }
             }
-
-            if (Thread.currentThread().isInterrupted()) {
-                break;
-            }
-
-            // Consume the lot
-            sumLotsConsumed++;
-            getBookkeeper().increaseLotsConsumed();
-            for (int i = 0; i < lotSize; i++) {
-                sumProductsConsumed++;
-                getBookkeeper().increaseProductsConsumed();
-            }
-
-            // Aktivitaet #5: Ausgabe der aktuellen Konsumations-Daten
-            printCurrentThreadData(sumLotsConsumed, sumProductsConsumed);
-
         }
 
         // Aktivitaet #9: Synchronisation für Konsumationsende
